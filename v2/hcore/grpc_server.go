@@ -70,6 +70,12 @@ func Setup(params *SetupRequest, platformInterface libbox.PlatformInterface) err
 			Debug:           params.Debug,
 		})
 
+	// A previous abnormal exit (crash, force-kill, shutdown) can leave the
+	// Windows system proxy enabled while pointing at our local listener. Clear
+	// that stale entry before anything else, so the app does not start up with
+	// networking already broken.
+	clearStaleSystemProxy()
+
 	hutils.RedirectStderr(fmt.Sprint(params.WorkingDir, "/data/stderr", params.Mode, ".log"))
 
 	Log(LogLevel_DEBUG, LogType_CORE, fmt.Sprintf("libbox.Setup success %s %s %s %v", params.BasePath, params.WorkingDir, params.TempDir, tcpConn))
