@@ -82,6 +82,9 @@ func NewService(ctx context.Context, options option.Options, stop <-chan struct{
 		closeService(instance)
 		return nil, err
 	}
+	// Record the proxy this run enabled so a later start can clear only its own
+	// leftover, never a proxy another program set.
+	rememberSystemProxy()
 	watch.step("starting the inbounds, outbounds and services")
 
 	// instance.GetInstance().AddPostService("hiddifyMainServiceManager", &hiddifyMainServiceManager{})
